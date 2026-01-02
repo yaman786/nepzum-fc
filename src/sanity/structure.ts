@@ -1,44 +1,43 @@
 import type { StructureBuilder } from 'sanity/structure'
 
-// Helper to build the structure
 export const structure = (S: StructureBuilder) =>
     S.list()
-        .title('Club Management')
+        .title('Nepzum FC Dashboard')
         .items([
-            // News Section
+            // Quick Actions Header
             S.listItem()
-                .title('News & Updates')
+                .title('📰 News & Updates')
+                .id('news')
                 .child(
                     S.documentTypeList('post')
                         .title('News Articles')
+                        .defaultOrdering([{ field: 'publishedAt', direction: 'desc' }])
+                ),
+
+            S.listItem()
+                .title('⚽ Match Fixtures')
+                .id('fixtures')
+                .child(
+                    S.documentTypeList('fixture')
+                        .title('Fixtures & Results')
+                        .defaultOrdering([{ field: 'date', direction: 'asc' }])
                 ),
 
             S.divider(),
 
-            // Team Section
             S.listItem()
-                .title('Team Management')
+                .title('👤 Player Roster')
+                .id('players')
                 .child(
-                    S.list()
-                        .title('Team Management')
-                        .items([
-                            S.documentTypeListItem('fixture').title('Match Fixtures'),
-                            S.documentTypeListItem('player').title('Player Roster'),
-                        ])
+                    S.documentTypeList('player')
+                        .title('Players & Coaches')
                 ),
 
-            // Academy/Programs Section
             S.listItem()
-                .title('Academy Programs')
+                .title('🎓 Training Programs')
+                .id('programs')
                 .child(
                     S.documentTypeList('program')
-                        .title('Training Programs')
+                        .title('Academy Programs')
                 ),
-
-            S.divider(),
-
-            // Filter out what we've already listed so we don't have duplicates if we add new types later
-            ...S.documentTypeListItems().filter(
-                (listItem) => !['post', 'fixture', 'player', 'program'].includes(listItem.getId() as string)
-            ),
         ])

@@ -4,67 +4,117 @@ export const fixture = defineType({
     name: 'fixture',
     title: 'Match Fixture',
     type: 'document',
+    icon: () => '⚽',
     fields: [
         defineField({
-            name: 'title',
-            title: 'Match Title',
+            name: 'opponent',
+            title: 'Opponent Team',
             type: 'string',
-            description: 'e.g., Nepzum FC vs Bromley',
+            description: 'Who are we playing against? (e.g., "Charlton Youth")',
             validation: (rule) => rule.required(),
         }),
         defineField({
-            name: 'opponent',
-            title: 'Opponent Name',
+            name: 'ageGroup',
+            title: 'Our Team',
             type: 'string',
+            description: 'Which Nepzum FC squad is playing?',
+            options: {
+                list: [
+                    { title: 'U7-U8 Juniors', value: 'U7-U8' },
+                    { title: 'U9-U10 Development', value: 'U9-U10' },
+                    { title: 'U11-U12 Academy', value: 'U11-U12' },
+                    { title: 'U13-U16 Youth', value: 'U13-U16' },
+                ],
+                layout: 'dropdown',
+            },
             validation: (rule) => rule.required(),
         }),
         defineField({
             name: 'date',
-            title: 'Kick-off Date/Time',
+            title: 'Match Date & Time',
             type: 'datetime',
+            description: 'When is kick-off?',
             validation: (rule) => rule.required(),
         }),
         defineField({
             name: 'isHome',
             title: 'Home Match?',
             type: 'boolean',
+            description: 'Toggle ON if we are playing at home.',
             initialValue: true,
         }),
         defineField({
             name: 'location',
-            title: 'Location',
+            title: 'Venue',
             type: 'string',
+            description: 'Where is the match? (Auto-filled for home games)',
             initialValue: 'Plumstead Common',
         }),
         defineField({
-            name: 'opponentLogo',
-            title: 'Opponent Logo',
-            type: 'image',
+            name: 'competition',
+            title: 'Competition',
+            type: 'string',
+            description: 'What competition is this?',
+            options: {
+                list: [
+                    { title: 'League Match', value: 'League' },
+                    { title: 'Cup Match', value: 'Cup' },
+                    { title: 'Friendly', value: 'Friendly' },
+                    { title: 'Tournament', value: 'Tournament' },
+                ],
+            },
+            initialValue: 'League',
         }),
         defineField({
             name: 'result',
-            title: 'Result (Optional)',
+            title: 'Match Result (After Game)',
             type: 'object',
+            description: 'Fill this in after the match is played.',
             fields: [
-                { name: 'homeScore', type: 'number', title: 'Home Score' },
-                { name: 'awayScore', type: 'number', title: 'Away Score' },
+                {
+                    name: 'ourScore',
+                    type: 'number',
+                    title: 'Our Score',
+                    description: 'How many goals did Nepzum FC score?',
+                },
+                {
+                    name: 'theirScore',
+                    type: 'number',
+                    title: 'Their Score',
+                    description: 'How many goals did the opponent score?',
+                },
             ],
             options: {
-                collapsible: true, // Make it collapsible so it doesn't take up space if not needed
+                collapsible: true,
                 collapsed: true,
             }
         }),
     ],
     preview: {
         select: {
-            title: 'title',
+            opponent: 'opponent',
+            ageGroup: 'ageGroup',
             date: 'date',
+            isHome: 'isHome',
+            ourScore: 'result.ourScore',
+            theirScore: 'result.theirScore',
         },
-        prepare({ title, date }) {
+        prepare({ opponent, ageGroup, date, isHome, ourScore, theirScore }) {
+            const hasResult = ourScore !== undefined && theirScore !== undefined;
+            const resultText = hasResult ? ` (${ourScore}-${theirScore})` : '';
+            const homeAway = isHome ? '🏠' : '✈️';
+
             return {
-                title: title,
-                subtitle: date ? new Date(date).toLocaleDateString() : 'No date set',
+                title: `${homeAway} vs ${opponent}${resultText}`,
+                subtitle: `${ageGroup || 'TBD'} • ${date ? new Date(date).toLocaleDateString('en-GB') : 'Date TBD'}`,
             }
         },
     },
+    orderings: [
+        {
+            title: 'Upcoming Matches',
+            name: 'dateAsc',
+            by: [{ field: 'date', direction: 'asc' }],
+        },
+    ],
 })
