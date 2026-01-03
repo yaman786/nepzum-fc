@@ -112,7 +112,7 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
                                         link: ({ value, children }) => {
                                             const target = (value?.href || '').startsWith('http') ? '_blank' : undefined
                                             return (
-                                                <a href={value?.href} target={target} rel={target === '_blank' && 'noindex nofollow'} className="text-yellow-400 hover:text-yellow-300 underline underline-offset-2">
+                                                <a href={value?.href} target={target} rel={target === '_blank' ? 'noindex nofollow' : undefined} className="text-yellow-400 hover:text-yellow-300 underline underline-offset-2">
                                                     {children}
                                                 </a>
                                             )
