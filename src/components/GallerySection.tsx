@@ -178,15 +178,25 @@ export default function GallerySection({ items }: { items?: GalleryItem[] }) {
         ? galleryItems
         : galleryItems.filter(item => item.category === activeCategory);
 
+    // Handle body scroll
+    useEffect(() => {
+        if (lightboxOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [lightboxOpen]);
+
     const openLightbox = (index: number) => {
         setCurrentIndex(index);
         setLightboxOpen(true);
-        document.body.style.overflow = 'hidden';
     };
 
     const closeLightbox = useCallback(() => {
         setLightboxOpen(false);
-        document.body.style.overflow = '';
     }, []);
 
     const nextItem = useCallback(() => {
