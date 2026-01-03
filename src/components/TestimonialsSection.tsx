@@ -1,6 +1,14 @@
 import { Quote, Star } from 'lucide-react';
 
-const testimonials = [
+interface Testimonial {
+    _id?: string;
+    quote: string;
+    author: string;
+    role: string;
+    rating: number;
+}
+
+const FALLBACK_TESTIMONIALS: Testimonial[] = [
     {
         quote: "My son was nervous at his first session, but Coach Dave made him feel so welcome. Six months later, he can't wait for training every week!",
         author: "Sarah M.",
@@ -21,7 +29,9 @@ const testimonials = [
     },
 ];
 
-export default function TestimonialsSection() {
+export default function TestimonialsSection({ testimonials }: { testimonials?: Testimonial[] }) {
+    const testimonialsToDisplay = testimonials && testimonials.length > 0 ? testimonials : FALLBACK_TESTIMONIALS;
+
     return (
         <section className="relative py-24 sm:py-32 overflow-hidden">
             {/* Background */}
@@ -43,9 +53,9 @@ export default function TestimonialsSection() {
 
                 {/* Testimonials Grid */}
                 <div className="grid md:grid-cols-3 gap-6">
-                    {testimonials.map((testimonial, index) => (
+                    {testimonialsToDisplay.map((testimonial, index) => (
                         <div
-                            key={index}
+                            key={testimonial._id || index}
                             className="glass rounded-2xl p-6 relative"
                         >
                             {/* Quote Icon */}

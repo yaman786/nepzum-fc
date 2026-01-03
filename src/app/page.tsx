@@ -15,7 +15,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import HomeNewsSection from '@/components/HomeNewsSection';
 
 import { sanityFetch } from '@/sanity/lib/fetch';
-import { HOMEPAGE_NEWS_QUERY, UPCOMING_MATCHES_QUERY, RECENT_RESULTS_QUERY, COACHES_QUERY, PROGRAMS_QUERY, PRICING_QUERY, GALLERY_QUERY } from '@/sanity/lib/queries';
+import { HOMEPAGE_NEWS_QUERY, UPCOMING_MATCHES_QUERY, RECENT_RESULTS_QUERY, COACHES_QUERY, PROGRAMS_QUERY, PRICING_QUERY, GALLERY_QUERY, TESTIMONIALS_QUERY } from '@/sanity/lib/queries';
 import { FALLBACK_NEWS, FALLBACK_MATCHES, FALLBACK_RESULTS } from '@/sanity/lib/fallback';
 
 export const revalidate = 60; // Revalidate every 60 seconds
@@ -28,6 +28,7 @@ export default async function Home() {
   let programs = [];
   let plans = [];
   let gallery = [];
+  let testimonials = [];
   const isSanityConfigured = !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 
   try {
@@ -39,6 +40,7 @@ export default async function Home() {
       programs = await sanityFetch<any[]>({ query: PROGRAMS_QUERY });
       plans = await sanityFetch<any[]>({ query: PRICING_QUERY });
       gallery = await sanityFetch<any[]>({ query: GALLERY_QUERY });
+      testimonials = await sanityFetch<any[]>({ query: TESTIMONIALS_QUERY });
     } else {
       console.warn("Sanity not configured. Using fallback data.");
       latestNews = FALLBACK_NEWS;
@@ -66,7 +68,7 @@ export default async function Home() {
         <FixturesSection upcomingMatches={upcomingMatches} recentResults={recentResults} />
         <PlayerSpotlight />
         <GallerySection items={gallery} />
-        <TestimonialsSection />
+        <TestimonialsSection testimonials={testimonials} />
         <FAQSection />
         <TrialCTA />
       </main>

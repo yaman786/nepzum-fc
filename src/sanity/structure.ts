@@ -70,4 +70,14 @@ export const structure = (S: StructureBuilder) =>
                     S.documentTypeList('gallery')
                         .title('Photo & Video Gallery')
                 ),
+
+            S.divider(),
+
+            S.listItem()
+                .title('💬 Testimonials')
+                .id('testimonials')
+                .child(
+                    S.documentTypeList('testimonial')
+                        .title('Parent Reviews')
+                ),
         ])

@@ -7,7 +7,8 @@ import { coach } from './coach'
 import { program } from './program'
 import { pricing } from './pricing'
 import { gallery } from './gallery'
+import { testimonial } from './testimonial'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-    types: [post, fixture, player, coach, program, pricing, gallery],
+    types: [post, fixture, player, coach, program, pricing, gallery, testimonial],
 }

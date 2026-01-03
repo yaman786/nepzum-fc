@@ -96,3 +96,11 @@ export const GALLERY_QUERY = groq`*[_type == "gallery"] | order(_createdAt desc)
   category,
   featured
 }`
+
+export const TESTIMONIALS_QUERY = groq`*[_type == "testimonial"] | order(_createdAt desc) {
+  _id,
+  author,
+  role,
+  quote,
+  rating
+}`
