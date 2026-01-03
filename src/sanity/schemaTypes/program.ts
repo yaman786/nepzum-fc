@@ -6,35 +6,42 @@ export const program = defineType({
     type: 'document',
     fields: [
         defineField({
-            name: 'title',
-            title: 'Program Title',
+            name: 'name',
+            title: 'Program Name',
             type: 'string',
             description: 'e.g., Mini Kickers',
             validation: (rule) => rule.required(),
         }),
         defineField({
-            name: 'ageGroup',
+            name: 'ages',
             title: 'Age Group Label',
             type: 'string',
             description: 'e.g., U5 - U6',
         }),
         defineField({
+            name: 'ageRange',
+            title: 'School Year / Range',
+            type: 'string',
+            description: 'e.g., Reception & Year 1',
+        }),
+        defineField({
             name: 'schedule',
-            title: 'Schedule Summary',
-            type: 'string',
-            description: 'e.g., Sat 9am - 10am',
+            title: 'Schedule Slots',
+            type: 'array',
+            of: [{
+                type: 'object',
+                fields: [
+                    { name: 'day', type: 'string', title: 'Day' },
+                    { name: 'time', type: 'string', title: 'Time' },
+                    { name: 'note', type: 'string', title: 'Note (Optional)' }
+                ]
+            }],
         }),
         defineField({
-            name: 'price',
-            title: 'Price Label',
+            name: 'focus',
+            title: 'Training Focus',
             type: 'string',
-            description: 'e.g., £40/month',
-        }),
-        defineField({
-            name: 'description',
-            title: 'Short Description',
-            type: 'text',
-            rows: 3,
+            description: 'e.g., Fun, basic ball skills',
         }),
         defineField({
             name: 'color',

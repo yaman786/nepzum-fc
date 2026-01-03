@@ -1,6 +1,22 @@
 import { Clock, MapPin, Users, Calendar } from 'lucide-react';
 
-const ageGroups = [
+interface ScheduleSlot {
+    day: string;
+    time: string;
+    note?: string;
+}
+
+interface Program {
+    _id?: string;
+    name: string;
+    ages: string;
+    ageRange: string;
+    schedule: ScheduleSlot[];
+    focus: string;
+    color: string;
+}
+
+const FALLBACK_PROGRAMS: Program[] = [
     {
         name: 'Mini Kickers',
         ages: 'U5 - U6',
@@ -59,7 +75,9 @@ const ageGroups = [
     },
 ];
 
-export default function ScheduleSection() {
+export default function ScheduleSection({ programs }: { programs?: Program[] }) {
+    const programsToDisplay = programs && programs.length > 0 ? programs : FALLBACK_PROGRAMS;
+
     return (
         <section id="schedule" className="relative py-24 sm:py-32 overflow-hidden bg-slate-950">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -79,7 +97,7 @@ export default function ScheduleSection() {
 
                 {/* Age Group Cards */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {ageGroups.map((group) => (
+                    {programsToDisplay.map((group) => (
                         <div
                             key={group.name}
                             className="glass rounded-2xl overflow-hidden card-hover"
@@ -104,7 +122,7 @@ export default function ScheduleSection() {
                             <div className="p-5">
                                 {/* Schedule */}
                                 <div className="space-y-3 mb-5">
-                                    {group.schedule.map((slot, idx) => (
+                                    {group.schedule && group.schedule.map((slot, idx) => (
                                         <div
                                             key={idx}
                                             className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50"

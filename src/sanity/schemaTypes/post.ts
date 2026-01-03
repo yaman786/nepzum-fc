@@ -15,14 +15,19 @@ export const post = defineType({
         }),
         defineField({
             name: 'slug',
-            title: 'URL Slug',
+            title: 'URL Address',
             type: 'slug',
+            description: '👆 Click "Generate" button to create this automatically from your headline.',
             options: {
                 source: 'title',
                 maxLength: 96,
+                slugify: (input: string) => input
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '')
+                    .slice(0, 96),
             },
-            hidden: true, // Hidden from user - auto-generated
-            validation: (rule) => rule.required(),
+            validation: (rule) => rule.required().error('Click the "Generate" button above to create the URL.'),
         }),
         defineField({
             name: 'category',

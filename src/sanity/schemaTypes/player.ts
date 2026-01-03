@@ -15,11 +15,18 @@ export const player = defineType({
         }),
         defineField({
             name: 'slug',
-            title: 'URL Slug',
+            title: 'URL Address',
             type: 'slug',
-            options: { source: 'name' },
-            hidden: true, // Auto-generated, hidden from user
-            validation: (rule) => rule.required(),
+            description: '👆 Click "Generate" to create this from the player name.',
+            options: {
+                source: 'name',
+                slugify: (input: string) => input
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '')
+                    .slice(0, 96),
+            },
+            validation: (rule) => rule.required().error('Click "Generate" to create the URL.'),
         }),
         defineField({
             name: 'squad',

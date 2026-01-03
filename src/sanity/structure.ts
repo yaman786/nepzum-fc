@@ -26,12 +26,22 @@ export const structure = (S: StructureBuilder) =>
             S.divider(),
 
             S.listItem()
-                .title('👤 Player Roster')
+                .title('👤 Players')
                 .id('players')
                 .child(
                     S.documentTypeList('player')
-                        .title('Players & Coaches')
+                        .title('Player Roster')
                 ),
+
+            S.listItem()
+                .title('🧢 Coaching Staff')
+                .id('coaches')
+                .child(
+                    S.documentTypeList('coach')
+                        .title('Coaches')
+                ),
+
+            S.divider(),
 
             S.listItem()
                 .title('🎓 Training Programs')
@@ -39,5 +49,25 @@ export const structure = (S: StructureBuilder) =>
                 .child(
                     S.documentTypeList('program')
                         .title('Academy Programs')
+                ),
+
+            S.divider(),
+
+            S.listItem()
+                .title('💰 Pricing Plans')
+                .id('pricing')
+                .child(
+                    S.documentTypeList('pricing')
+                        .title('Membership Plans')
+                ),
+
+            S.divider(),
+
+            S.listItem()
+                .title('📸 Gallery')
+                .id('gallery')
+                .child(
+                    S.documentTypeList('gallery')
+                        .title('Photo & Video Gallery')
                 ),
         ])

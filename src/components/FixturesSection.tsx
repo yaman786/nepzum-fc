@@ -10,8 +10,18 @@ export interface Match {
     isHome: boolean;
 }
 
+export interface MatchResult {
+    _id: string; // Changed from id: number to match Sanity
+    homeTeam: string;
+    homeScore: number;
+    awayTeam: string;
+    awayScore: number;
+    date: string;
+}
+
 interface FixturesSectionProps {
     upcomingMatches?: Match[];
+    recentResults?: MatchResult[];
 }
 
 function formatDate(dateString: string) {
@@ -50,15 +60,15 @@ const FALLBACK_MATCHES = [
     }
 ];
 
-// Moving recentResults outside or keeping it static for now as per schema limitations (Result object exists but querying it needs more logic)
-const recentResults = [
-    { id: 1, homeTeam: 'Nepzum FC U12', homeScore: 3, awayTeam: 'Eltham Eagles', awayScore: 1, date: '2024-12-21' },
-    { id: 2, homeTeam: 'Lewisham Lions', homeScore: 2, awayTeam: 'Nepzum FC U14', awayScore: 2, date: '2024-12-20' },
-    { id: 3, homeTeam: 'Nepzum FC U10', homeScore: 4, awayTeam: 'Bexley Youth', awayScore: 0, date: '2024-12-14' },
+const FALLBACK_RESULTS = [
+    { _id: '1', homeTeam: 'Nepzum FC U12', homeScore: 3, awayTeam: 'Eltham Eagles', awayScore: 1, date: '2024-12-21' },
+    { _id: '2', homeTeam: 'Lewisham Lions', homeScore: 2, awayTeam: 'Nepzum FC U14', awayScore: 2, date: '2024-12-20' },
+    { _id: '3', homeTeam: 'Nepzum FC U10', homeScore: 4, awayTeam: 'Bexley Youth', awayScore: 0, date: '2024-12-14' },
 ];
 
-export default function FixturesSection({ upcomingMatches }: FixturesSectionProps) {
+export default function FixturesSection({ upcomingMatches, recentResults }: FixturesSectionProps) {
     const matchesToDisplay = upcomingMatches && upcomingMatches.length > 0 ? upcomingMatches : FALLBACK_MATCHES;
+    const resultsToDisplay = recentResults && recentResults.length > 0 ? recentResults : FALLBACK_RESULTS;
 
     return (
         <section id="fixtures" className="relative py-24 sm:py-32 overflow-hidden">
@@ -141,8 +151,8 @@ export default function FixturesSection({ upcomingMatches }: FixturesSectionProp
                             Recent Results
                         </h3>
                         <div className="glass rounded-xl p-5 space-y-4">
-                            {recentResults.map((result) => (
-                                <div key={result.id} className="border-b border-slate-700 last:border-0 pb-4 last:pb-0">
+                            {resultsToDisplay.map((result) => (
+                                <div key={result._id} className="border-b border-slate-700 last:border-0 pb-4 last:pb-0">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm text-slate-500">{formatDate(result.date)}</span>
                                     </div>

@@ -18,5 +18,6 @@ function assertValue<T>(v: T | undefined, errorMessage: string): T {
         console.warn(errorMessage)
         return 'unconfigured' as T
     }
+    console.log(`[Sanity Config] Loaded: ${JSON.stringify(v)}`);
     return v
 }

@@ -1,7 +1,19 @@
 import Image from 'next/image';
 import { Award, Shield, Star, CheckCircle } from 'lucide-react';
 
-const coaches = [
+interface Coach {
+    _id?: string;
+    name: string;
+    role: string;
+    qualifications: string[];
+    experience: string;
+    bio: string;
+    image?: string; // Rename to imageUrl in query but optional here for fallback match
+    imageUrl?: string;
+    badges: string[];
+}
+
+const FALLBACK_COACHES = [
     {
         name: 'David Thompson',
         role: 'Head Coach',
@@ -9,7 +21,7 @@ const coaches = [
         experience: 'Former Charlton Athletic Youth',
         bio: '15+ years developing young talent in Southeast London. Passionate about building confidence and skills in every player.',
         // Professional full-body/portrait image
-        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=500&h=600&fit=crop',
+        imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=500&h=600&fit=crop',
         badges: ['DBS Checked', 'First Aid Certified']
     },
     {
@@ -18,7 +30,7 @@ const coaches = [
         qualifications: ['FA Level 2', 'UEFA C License'],
         experience: 'Youth Development Specialist',
         bio: '8 years coaching grassroots football. Expert in technical skills development for ages 6-12.',
-        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=600&fit=crop',
+        imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=600&fit=crop',
         badges: ['DBS Checked', 'Safeguarding Lead']
     },
     {
@@ -27,12 +39,14 @@ const coaches = [
         qualifications: ['FA Level 2 GK', 'FA Safeguarding'],
         experience: "Former Women's Super League",
         bio: 'Specialist in youth goalkeeper development. Bringing elite-level training to grassroots.',
-        image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&h=600&fit=crop',
+        imageUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&h=600&fit=crop',
         badges: ['DBS Checked', 'First Aid Certified']
     },
 ];
 
-export default function CoachesSection() {
+export default function CoachesSection({ coaches }: { coaches?: Coach[] }) {
+    const coachesToDisplay = coaches && coaches.length > 0 ? coaches : FALLBACK_COACHES;
+
     return (
         <section id="coaches" className="relative py-24 sm:py-32 overflow-hidden">
             {/* Background */}
@@ -54,22 +68,22 @@ export default function CoachesSection() {
 
                 {/* Coaches Grid - Better Layout */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {coaches.map((coach) => (
+                    {coachesToDisplay.map((coach) => (
                         <div
                             key={coach.name}
                             className="group card-hover glass rounded-2xl overflow-hidden"
                         >
                             {/* Image Container - Proper Aspect Ratio */}
                             <div className="relative aspect-[4/5] overflow-hidden bg-slate-800">
-                                <Image
-                                    src={coach.image}
-                                    alt={`${coach.name} - ${coach.role}`}
-                                    fill
-                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                    className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                                    placeholder="blur"
-                                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-                                />
+                                {coach.imageUrl && (
+                                    <Image
+                                        src={coach.imageUrl}
+                                        alt={`${coach.name} - ${coach.role}`}
+                                        fill
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                        className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                )}
                                 {/* Gradient Overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
 
@@ -91,7 +105,7 @@ export default function CoachesSection() {
                             <div className="p-5">
                                 {/* Qualifications */}
                                 <div className="flex flex-wrap gap-2 mb-4">
-                                    {coach.qualifications.map((qual) => (
+                                    {coach.qualifications && coach.qualifications.map((qual) => (
                                         <span
                                             key={qual}
                                             className="px-3 py-1.5 bg-purple-900/50 text-purple-200 text-sm font-medium rounded-lg border border-purple-500/30"
@@ -114,7 +128,7 @@ export default function CoachesSection() {
 
                                 {/* Verification Badges */}
                                 <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-700/50">
-                                    {coach.badges.map((badge) => (
+                                    {coach.badges && coach.badges.map((badge) => (
                                         <span
                                             key={badge}
                                             className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/30"

@@ -5,17 +5,18 @@ import Image from 'next/image';
 import { Camera, Play, X, ChevronLeft, ChevronRight, Video, Image as ImageIcon, ZoomIn, Maximize2 } from 'lucide-react';
 
 type GalleryItem = {
-    id: number;
+    _id?: string;
+    id?: number;
     type: 'image' | 'video';
     src: string;
     thumbnail?: string;
-    alt: string;
+    alt?: string;
     caption: string;
     category: 'training' | 'matches' | 'events' | 'facilities';
     featured?: boolean;
 };
 
-const galleryItems: GalleryItem[] = [
+const FALLBACK_ITEMS: GalleryItem[] = [
     // Featured hero images
     {
         id: 1,
@@ -165,11 +166,12 @@ const categories = [
 ];
 
 
-export default function GallerySection() {
+export default function GallerySection({ items }: { items?: GalleryItem[] }) {
+    const galleryItems = items && items.length > 0 ? items : FALLBACK_ITEMS;
     const [activeCategory, setActiveCategory] = useState('all');
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [imageLoaded, setImageLoaded] = useState<Record<number, boolean>>({});
+    const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
     const [touchStart, setTouchStart] = useState<number | null>(null);
 
     const filteredItems = activeCategory === 'all'
@@ -238,11 +240,12 @@ export default function GallerySection() {
         setTouchStart(null);
     };
 
-    const handleImageLoad = (id: number) => {
+    const handleImageLoad = (id: string | number) => {
         setImageLoaded(prev => ({ ...prev, [id]: true }));
     };
 
     const currentItem = filteredItems[currentIndex];
+    const currentItemId = currentItem?._id || currentItem?.id; // Safety check
 
     // Get grid span class based on index and featured status
     const getGridClass = (item: GalleryItem, index: number) => {
@@ -305,64 +308,67 @@ export default function GallerySection() {
 
                 {/* Gallery Grid - Enhanced Masonry Style */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 auto-rows-auto">
-                    {filteredItems.map((item, index) => (
-                        <div
-                            key={item.id}
-                            onClick={() => openLightbox(index)}
-                            className={`group relative rounded-xl overflow-hidden cursor-pointer transform hover:scale-[1.02] transition-all duration-300 ${getGridClass(item, index)}`}
-                        >
-                            <div className={`relative ${getAspectClass(item, index)}`}>
-                                {/* Loading skeleton */}
-                                {!imageLoaded[item.id] && (
-                                    <div className="absolute inset-0 bg-slate-800 animate-pulse">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent skeleton-shimmer" />
+                    {filteredItems.map((item, index) => {
+                        const itemId = item._id || item.id || index;
+                        return (
+                            <div
+                                key={itemId}
+                                onClick={() => openLightbox(index)}
+                                className={`group relative rounded-xl overflow-hidden cursor-pointer transform hover:scale-[1.02] transition-all duration-300 ${getGridClass(item, index)}`}
+                            >
+                                <div className={`relative ${getAspectClass(item, index)}`}>
+                                    {/* Loading skeleton */}
+                                    {!imageLoaded[itemId] && (
+                                        <div className="absolute inset-0 bg-slate-800 animate-pulse">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent skeleton-shimmer" />
+                                        </div>
+                                    )}
+
+                                    <Image
+                                        src={item.type === 'video' ? item.thumbnail! : item.src}
+                                        alt={item.alt || item.caption}
+                                        fill
+                                        className={`object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded[itemId] ? 'opacity-100' : 'opacity-0'}`}
+                                        onLoad={() => handleImageLoad(itemId)}
+                                        placeholder="blur"
+                                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                                    />
+                                </div>
+
+                                {/* Video Play Button */}
+                                {item.type === 'video' && (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-yellow-400/30">
+                                            <Play className="w-8 h-8 text-purple-900 ml-1" fill="currentColor" />
+                                        </div>
                                     </div>
                                 )}
 
-                                <Image
-                                    src={item.type === 'video' ? item.thumbnail! : item.src}
-                                    alt={item.alt}
-                                    fill
-                                    className={`object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded[item.id] ? 'opacity-100' : 'opacity-0'}`}
-                                    onLoad={() => handleImageLoad(item.id)}
-                                    placeholder="blur"
-                                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-                                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-                                />
-                            </div>
+                                {/* Hover Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-purple-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
 
-                            {/* Video Play Button */}
-                            {item.type === 'video' && (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-yellow-400/30">
-                                        <Play className="w-8 h-8 text-purple-900 ml-1" fill="currentColor" />
+                                {/* Zoom Icon */}
+                                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                    <div className="p-2 rounded-full bg-white/20 backdrop-blur-sm">
+                                        {item.type === 'video' ? (
+                                            <Maximize2 className="w-4 h-4 text-white" />
+                                        ) : (
+                                            <ZoomIn className="w-4 h-4 text-white" />
+                                        )}
                                     </div>
                                 </div>
-                            )}
 
-                            {/* Hover Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-purple-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
-
-                            {/* Zoom Icon */}
-                            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                                <div className="p-2 rounded-full bg-white/20 backdrop-blur-sm">
-                                    {item.type === 'video' ? (
-                                        <Maximize2 className="w-4 h-4 text-white" />
-                                    ) : (
-                                        <ZoomIn className="w-4 h-4 text-white" />
-                                    )}
+                                {/* Caption */}
+                                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                                    <span className="text-white font-medium text-sm flex items-center gap-2">
+                                        {item.type === 'video' && <Video className="w-4 h-4" />}
+                                        {item.caption}
+                                    </span>
                                 </div>
                             </div>
-
-                            {/* Caption */}
-                            <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                                <span className="text-white font-medium text-sm flex items-center gap-2">
-                                    {item.type === 'video' && <Video className="w-4 h-4" />}
-                                    {item.caption}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* Gallery Stats */}
@@ -412,7 +418,7 @@ export default function GallerySection() {
                     >
                         <X className="w-6 h-6" />
                     </button>
-
+                    {/* ... Navigation buttons omitted for brevity if unchanged, but included in replace ... */}
                     {/* Navigation - Left */}
                     <button
                         onClick={prevItem}
@@ -437,7 +443,7 @@ export default function GallerySection() {
                             <div className="relative aspect-[16/10] rounded-xl overflow-hidden shadow-2xl">
                                 <Image
                                     src={currentItem.src}
-                                    alt={currentItem.alt}
+                                    alt={currentItem.alt || currentItem.caption}
                                     fill
                                     className="object-contain"
                                     priority
@@ -475,23 +481,26 @@ export default function GallerySection() {
 
                     {/* Thumbnail strip */}
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden md:flex gap-2 max-w-xl overflow-x-auto p-2 rounded-xl bg-black/50 backdrop-blur-sm">
-                        {filteredItems.slice(0, 6).map((item, idx) => (
-                            <button
-                                key={item.id}
-                                onClick={() => setCurrentIndex(idx)}
-                                className={`relative w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 transition-all ${idx === currentIndex
-                                    ? 'ring-2 ring-yellow-400 scale-105'
-                                    : 'opacity-50 hover:opacity-100'
-                                    }`}
-                            >
-                                <Image
-                                    src={item.type === 'video' ? item.thumbnail! : item.src}
-                                    alt=""
-                                    fill
-                                    className="object-cover"
-                                />
-                            </button>
-                        ))}
+                        {filteredItems.slice(0, 6).map((item, idx) => {
+                            const thumbId = item._id || item.id || idx;
+                            return (
+                                <button
+                                    key={thumbId}
+                                    onClick={() => setCurrentIndex(idx)}
+                                    className={`relative w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 transition-all ${idx === currentIndex
+                                        ? 'ring-2 ring-yellow-400 scale-105'
+                                        : 'opacity-50 hover:opacity-100'
+                                        }`}
+                                >
+                                    <Image
+                                        src={item.type === 'video' ? item.thumbnail! : item.src}
+                                        alt=""
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </button>
+                            );
+                        })}
                         {filteredItems.length > 6 && (
                             <div className="w-16 h-12 rounded-lg bg-white/10 flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
                                 +{filteredItems.length - 6}

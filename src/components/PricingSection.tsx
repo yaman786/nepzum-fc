@@ -1,40 +1,23 @@
 import { Check, Star, Users, Zap } from 'lucide-react';
 
-const pricingPlans = [
+interface Plan {
+    _id?: string;
+    title: string;
+    price: string;
+    period: string;
+    description: string;
+    features: string[];
+    popular: boolean;
+    ctaText: string;
+    ctaLink: string;
+    savings?: string;
+    originalPrice?: string;
+    billedAs?: string;
+}
+
+const FALLBACK_PLANS: Plan[] = [
     {
-        name: 'Single Child',
-        number: '40',
-        period: 'per month',
-        description: 'Complete training package for aspiring players',
-        features: [
-            'Weekly training sessions',
-            'Match day registration',
-            'Club training top included',
-            'FA certified coaching',
-            'Progress reports',
-        ],
-        popular: false,
-        cta: 'Start Free Trial →'
-    },
-    {
-        name: 'Family',
-        number: '65',
-        period: 'per month',
-        description: 'Perfect for siblings to develop together',
-        originalPrice: '80',
-        savings: 'Save £15/month',
-        features: [
-            'Everything in Single Child',
-            '2 children included',
-            '2 club training tops',
-            'Priority match selection',
-            'Family events access',
-        ],
-        popular: true,
-        cta: 'Start Free Trial →'
-    },
-    {
-        name: 'Annual',
+        title: 'Annual',
         price: '35',
         period: 'per month',
         description: 'Commit for the season and save £60',
@@ -48,7 +31,42 @@ const pricingPlans = [
             'Exclusive member events',
         ],
         popular: false,
-        cta: 'Start Free Trial →'
+        ctaText: 'Start Free Trial →',
+        ctaLink: '#trial'
+    },
+    {
+        title: 'Single Child',
+        price: '40',
+        period: 'per month',
+        description: 'Complete training package for aspiring players',
+        features: [
+            'Weekly training sessions',
+            'Match day registration',
+            'Club training top included',
+            'FA certified coaching',
+            'Progress reports',
+        ],
+        popular: false,
+        ctaText: 'Start Free Trial →',
+        ctaLink: '#trial'
+    },
+    {
+        title: 'Family',
+        price: '65',
+        period: 'per month',
+        description: 'Perfect for siblings to develop together',
+        originalPrice: '80',
+        savings: 'Save £15/month',
+        features: [
+            'Everything in Single Child',
+            '2 children included',
+            '2 club training tops',
+            'Priority match selection',
+            'Family events access',
+        ],
+        popular: true,
+        ctaText: 'Start Free Trial →',
+        ctaLink: '#trial'
     },
 ];
 
@@ -59,7 +77,8 @@ const additionalItems = [
     { name: 'Away kit (optional)', price: '£30' },
 ];
 
-export default function PricingSection() {
+export default function PricingSection({ plans }: { plans?: Plan[] }) {
+    const plansToDisplay = plans && plans.length > 0 ? plans : FALLBACK_PLANS;
     return (
         <section id="pricing" className="relative py-24 sm:py-32 overflow-hidden">
             {/* Background */}
@@ -82,12 +101,12 @@ export default function PricingSection() {
 
                 {/* Pricing Cards */}
                 <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-16">
-                    {pricingPlans.map((plan) => (
+                    {plansToDisplay.map((plan) => (
                         <div
-                            key={plan.name}
+                            key={plan.title}
                             className={`relative glass rounded-2xl p-6 lg:p-8 ${plan.popular
-                                    ? 'ring-2 ring-yellow-400 scale-[1.02]'
-                                    : ''
+                                ? 'ring-2 ring-yellow-400 scale-[1.02]'
+                                : ''
                                 }`}
                         >
                             {/* Popular Badge */}
@@ -103,7 +122,7 @@ export default function PricingSection() {
                             {/* Plan Header */}
                             <div className="text-center mb-6 pt-2">
                                 <h3 className="font-display text-2xl font-bold text-white mb-2">
-                                    {plan.name}
+                                    {plan.title}
                                 </h3>
                                 <p className="text-slate-400 text-sm">{plan.description}</p>
                             </div>
@@ -137,7 +156,7 @@ export default function PricingSection() {
 
                             {/* Features */}
                             <ul className="space-y-3 mb-8">
-                                {plan.features.map((feature) => (
+                                {plan.features && plan.features.map((feature) => (
                                     <li key={feature} className="flex items-start gap-3">
                                         <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                                         <span className="text-slate-300">{feature}</span>
@@ -147,13 +166,13 @@ export default function PricingSection() {
 
                             {/* CTA */}
                             <a
-                                href="#trial"
+                                href={plan.ctaLink}
                                 className={`block w-full py-3 px-6 text-center font-bold rounded-lg transition-all ${plan.popular
-                                        ? 'bg-yellow-400 hover:bg-yellow-300 text-purple-900'
-                                        : 'bg-purple-600 hover:bg-purple-500 text-white'
+                                    ? 'bg-yellow-400 hover:bg-yellow-300 text-purple-900'
+                                    : 'bg-purple-600 hover:bg-purple-500 text-white'
                                     }`}
                             >
-                                {plan.cta}
+                                {plan.ctaText}
                             </a>
                         </div>
                     ))}

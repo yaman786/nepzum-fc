@@ -66,3 +66,30 @@ export const FALLBACK_MATCHES = [
         isHome: false,
     }
 ];
+
+export const FALLBACK_RESULTS = [
+    {
+        _id: '1',
+        homeTeam: 'Nepzum FC U12',
+        homeScore: 3,
+        awayTeam: 'Eltham Eagles',
+        awayScore: 1,
+        date: '2024-12-21'
+    },
+    {
+        _id: '2',
+        homeTeam: 'Lewisham Lions',
+        homeScore: 2,
+        awayTeam: 'Nepzum FC U14',
+        awayScore: 2,
+        date: '2024-12-20'
+    },
+    {
+        _id: '3',
+        homeTeam: 'Nepzum FC U10',
+        homeScore: 4,
+        awayTeam: 'Bexley Youth',
+        awayScore: 0,
+        date: '2024-12-14'
+    },
+];
